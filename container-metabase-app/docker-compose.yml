@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+
+  mysql-db:
+    build: .
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: dbmetabaserootpassword
+      MYSQL_DATABASE: metabase
+      MYSQL_USER: metabase
+      MYSQL_PASSWORD: metabasedatabasepassword
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: metabase_pma
+    environment:
+      PMA_HOST: mysql-db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8185:80
+
+  metabase:
+    container_name: metabase-app
+    image: metabase/metabase:latest
+    restart: always
+    volumes:
+      - ./data/metabase/metabase-data:/metabase-data
+    ports:
+      - 3000:3000
